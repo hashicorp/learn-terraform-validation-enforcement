@@ -7,10 +7,6 @@ data "aws_availability_zones" "available" {
   }
 }
 
-data "aws_ec2_instance_type" "bastion" {
-  instance_type = var.bastion_instance_type
-}
-
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "3.14.0"
@@ -35,7 +31,7 @@ resource "aws_security_group" "bastion" {
     to_port   = 22
     protocol  = "tcp"
     # Example CIDR
-    cidr_blocks = ["192.80.0.0/24"]
+    cidr_blocks = ["192.168.0.0/16"]
   }
 
   egress {
@@ -62,12 +58,5 @@ resource "aws_instance" "bastion" {
 
   subnet_id              = module.vpc.public_subnets[0]
   vpc_security_group_ids = [aws_security_group.bastion.id]
-
-  lifecycle {
-    precondition {
-      condition     = data.aws_ec2_instance_type.bastion.default_cores <= 2
-      error_message = "Bastion instances should not have more than 2 cores to avoid overprovisioning."
-    }
-  }
 }
 
