@@ -1,5 +1,5 @@
 variable "bastion_instance_type" {
-  description = "EC2 instance type."
+  description = "EC2 instance type. Should have no more than 2 cores."
   type        = string
 }
 
